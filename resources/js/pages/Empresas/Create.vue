@@ -8,8 +8,8 @@ import { useToast } from '@/composables/useToast';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Empresas',
@@ -43,7 +43,7 @@ const form = useForm({
 });
 
 const isSubmitting = ref(false);
-const { error: showErrorToast } = useToast();
+const { error: showErrorToast, success: showSuccessToast } = useToast();
 
 const submit = () => {
     if (isSubmitting.value) return;
@@ -139,6 +139,7 @@ const submit = () => {
     isSubmitting.value = true;
     form.post('/empresas', {
         onSuccess: () => {
+            showSuccessToast('Empresa criada com sucesso!');
             // Redirect handled by controller
         },
         onError: () => {

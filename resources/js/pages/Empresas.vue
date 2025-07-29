@@ -30,8 +30,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Empresas',

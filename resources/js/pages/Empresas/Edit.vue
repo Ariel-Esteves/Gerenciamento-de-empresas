@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useToast } from '@/composables/useToast';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -37,8 +38,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Empresas',
@@ -74,6 +75,7 @@ const form = useForm({
 });
 
 const isSubmitting = ref(false);
+const { success: showSuccessToast, error: showErrorToast } = useToast();
 
 const submit = () => {
     if (isSubmitting.value) return;
@@ -81,9 +83,11 @@ const submit = () => {
     isSubmitting.value = true;
     form.put(`/empresas/${props.empresa.id}`, {
         onSuccess: () => {
+            showSuccessToast('Empresa Atualizada');
             // Redirect handled by controller
         },
         onError: () => {
+            showErrorToast('Erro ao Atualizar', 'Ocorreu um erro ao atualizar a empresa. Verifique os dados e tente novamente.');
             isSubmitting.value = false;
         },
         onFinish: () => {

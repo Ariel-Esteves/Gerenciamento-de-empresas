@@ -16,14 +16,46 @@ class anexoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $anexos = Anexo::with('empresa')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Anexo::with('empresa');
+
+        // Apply search filter
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('descricao', 'like', "%{$search}%")
+                  ->orWhere('nome_arquivo', 'like', "%{$search}%")
+                  ->orWhereHas('empresa', function($empresaQuery) use ($search) {
+                      $empresaQuery->where('razao_social', 'like', "%{$search}%")
+                                   ->orWhere('nome_fantasia', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Apply tipo filter
+        if ($request->has('tipo') && !empty($request->tipo)) {
+            $query->where('tipo_anexo', $request->tipo);
+        }
+
+        // Apply empresa filter
+        if ($request->has('empresa_id') && !empty($request->empresa_id)) {
+            $query->where('empresa_id', $request->empresa_id);
+        }
+
+        $anexos = $query->orderBy('created_at', 'desc')
+                       ->paginate(10)
+                       ->appends($request->query());
+
+        // Get all empresas for filter dropdown
+        $empresas = Empresa::select('id', 'razao_social', 'nome_fantasia')
+            ->orderBy('razao_social')
+            ->get();
 
         return Inertia::render('Anexos/Index', [
-            'anexos' => $anexos
+            'anexos' => $anexos,
+            'filters' => $request->only(['search', 'tipo', 'empresa_id']),
+            'empresas' => $empresas
         ]);
     }
 

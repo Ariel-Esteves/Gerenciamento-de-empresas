@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useToast } from '@/composables/useToast';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
@@ -21,8 +22,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Anexos',
@@ -43,6 +44,7 @@ const form = useForm({
 });
 
 const isSubmitting = ref(false);
+const { success: showSuccessToast, error: showErrorToast } = useToast();
 const fileInput = ref<HTMLInputElement>();
 const dragOver = ref(false);
 const selectedFile = ref<File | null>(null);
@@ -51,8 +53,7 @@ const selectedFile = ref<File | null>(null);
 const tipoOptions = [
     { value: 'contrato', label: 'Contrato' },
     { value: 'documento', label: 'Documento' },
-    { value: 'certidao', label: 'Certidão' },
-    { value: 'licenca', label: 'Licença' },
+    { value: 'imagem', label: 'Imagem' },
     { value: 'outro', label: 'Outro' },
 ];
 
@@ -185,7 +186,7 @@ const submit = () => {
         forceFormData: true, // Ensure multipart/form-data for file upload
         onSuccess: (response) => {
             console.log('Upload successful:', response);
-            alert('Anexo salvo com sucesso!');
+            showSuccessToast('Anexo Criado', 'O anexo foi salvo com sucesso!');
             // Redirect handled by controller
         },
         onError: (errors) => {
@@ -194,13 +195,13 @@ const submit = () => {
 
             // Show specific error messages
             if (form.errors.arquivo) {
-                alert('Erro no arquivo: ' + form.errors.arquivo);
+                showErrorToast('Erro no Arquivo', form.errors.arquivo);
             } else if (form.errors.empresa_id) {
-                alert('Erro na empresa: ' + form.errors.empresa_id);
+                showErrorToast('Erro na Empresa', form.errors.empresa_id);
             } else if (form.errors.tipo_anexo) {
-                alert('Erro no tipo: ' + form.errors.tipo_anexo);
+                showErrorToast('Erro no Tipo', form.errors.tipo_anexo);
             } else {
-                alert('Erro ao salvar anexo. Verifique os dados e tente novamente.');
+                showErrorToast('Erro ao Salvar', 'Erro ao salvar anexo. Verifique os dados e tente novamente.');
             }
 
             isSubmitting.value = false;

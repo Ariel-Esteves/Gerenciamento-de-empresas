@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useToast } from '@/composables/useToast';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -48,8 +49,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Empresas',
@@ -63,6 +64,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const showDeleteDialog = ref(false);
 const isDeleting = ref(false);
+const { success: showSuccessToast, error: showErrorToast } = useToast();
 
 // Format file size
 const formatFileSize = (bytes: number): string => {
@@ -105,9 +107,11 @@ const deleteEmpresa = () => {
     isDeleting.value = true;
     router.delete(`/empresas/${props.empresa.id}`, {
         onSuccess: () => {
+            showSuccessToast('Empresa excluída com sucesso!');
             // Redirect will be handled by controller
         },
         onError: () => {
+            showErrorToast('Erro ao Excluir', 'Ocorreu um erro ao excluir a empresa. Tente novamente.');
             isDeleting.value = false;
             showDeleteDialog.value = false;
         },

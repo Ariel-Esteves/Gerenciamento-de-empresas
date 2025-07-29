@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useToast } from '@/composables/useToast';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
@@ -34,14 +35,17 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Empresas',
         href: '/empresas',
     },
 ];
+
+// Toast notifications
+const { success: showSuccessToast, error: showErrorToast } = useToast();
 
 // Filtering functionality
 const searchTerm = ref('');
@@ -191,10 +195,10 @@ const deleteEmpresa = (empresa: Empresa) => {
     if (confirm(`Tem certeza que deseja excluir a empresa "${empresa.razao_social}"?`)) {
         router.delete(`/empresas/${empresa.id}`, {
             onSuccess: () => {
-                // Success message will be handled by flash message
+                showSuccessToast('Empresa Excluída com sucesso!');
             },
             onError: () => {
-                alert('Erro ao excluir empresa');
+                showErrorToast('Erro ao Excluir', 'Ocorreu um erro ao excluir a empresa. Tente novamente.');
             }
         });
     }

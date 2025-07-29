@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useToast } from '@/composables/useToast';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
@@ -14,7 +15,7 @@ interface Empresa {
 
 interface Anexo {
     id: number;
-    tipo: string;
+    tipo_anexo: string;
     descricao?: string;
     nome_arquivo: string;
     caminho_arquivo: string;
@@ -38,8 +39,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Anexos',
@@ -57,14 +58,14 @@ const tipoOptions = [
     { value: '', label: 'Todos os tipos' },
     { value: 'contrato', label: 'Contrato' },
     { value: 'documento', label: 'Documento' },
-    { value: 'certidao', label: 'Certidão' },
-    { value: 'licenca', label: 'Licença' },
+    { value: 'imagem', label: 'Imagem' },
     { value: 'outro', label: 'Outro' },
 ];
 
 // Loading states
 const isDeleting = ref<number | null>(null);
 const showDeleteConfirm = ref<number | null>(null);
+const { success: showSuccessToast, error: showErrorToast } = useToast();
 
 // Computed properties
 const hasFilters = computed(() => {
@@ -122,10 +123,8 @@ const getTipoBadgeColor = (tipo: string): string => {
             return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
         case 'documento':
             return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
-        case 'certidao':
+        case 'imagem':
             return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300';
-        case 'licenca':
-            return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300';
         case 'outro':
             return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
         default:
@@ -188,9 +187,10 @@ const deleteAnexo = (id: number) => {
     router.delete(`/anexos/${id}`, {
         onSuccess: () => {
             showDeleteConfirm.value = null;
+            showSuccessToast('Anexo Excluído', 'O anexo foi excluído com sucesso!');
         },
         onError: () => {
-            alert('Erro ao excluir anexo. Tente novamente.');
+            showErrorToast('Erro ao Excluir', 'Erro ao excluir anexo. Tente novamente.');
         },
         onFinish: () => {
             isDeleting.value = null;
@@ -308,8 +308,8 @@ const deleteAnexo = (id: number) => {
 
                             <!-- Type Badge -->
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                :class="getTipoBadgeColor(anexo.tipo)">
-                                {{ getTipoLabel(anexo.tipo) }}
+                                :class="getTipoBadgeColor(anexo.tipo_anexo)">
+                                {{ getTipoLabel(anexo.tipo_anexo) }}
                             </span>
                         </div>
                     </div>

@@ -220,7 +220,7 @@ class EmpresaController extends Controller
             DB::commit();
 
             return redirect()->route('empresas.index')
-                ->with('success', 'Empresa atualizada com sucesso!');
+                ->with('Empresa atualizada');
 
         } catch (\Exception $e) {
             DB::rollBack();

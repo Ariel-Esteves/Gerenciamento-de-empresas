@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useToast } from '@/composables/useToast';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -17,7 +18,7 @@ interface Empresa {
 
 interface Anexo {
     id: number;
-    tipo: string;
+    tipo_anexo: string;
     descricao?: string;
     nome_arquivo: string;
     caminho_arquivo: string;
@@ -35,8 +36,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Hierarquia',
+        href: '/hierarquia',
     },
     {
         title: 'Anexos',
@@ -52,13 +53,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 const isDeleting = ref(false);
 const showDeleteConfirm = ref(false);
 const isDownloading = ref(false);
+const { success: showSuccessToast, error: showErrorToast } = useToast();
 
 // File type options for display
 const tipoOptions = [
     { value: 'contrato', label: 'Contrato' },
     { value: 'documento', label: 'Documento' },
-    { value: 'certidao', label: 'Certidão' },
-    { value: 'licenca', label: 'Licença' },
+    { value: 'imagem', label: 'Imagem' },
     { value: 'outro', label: 'Outro' },
 ];
 
@@ -111,10 +112,8 @@ const getTipoBadgeColor = (tipo: string): string => {
             return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
         case 'documento':
             return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
-        case 'certidao':
+        case 'imagem':
             return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300';
-        case 'licenca':
-            return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300';
         case 'outro':
             return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
         default:
@@ -183,11 +182,12 @@ const deleteAnexo = () => {
 
     router.delete(`/anexos/${props.anexo.id}`, {
         onSuccess: () => {
+            showSuccessToast('Anexo Excluído', 'O anexo foi excluído com sucesso!');
             // Redirect to anexos index after successful deletion
             router.visit('/anexos');
         },
         onError: () => {
-            alert('Erro ao excluir anexo. Tente novamente.');
+            showErrorToast('Erro ao Excluir', 'Erro ao excluir anexo. Tente novamente.');
             showDeleteConfirm.value = false;
             isDeleting.value = false;
         }
@@ -212,7 +212,7 @@ const deleteAnexo = () => {
                             {{ anexo.nome_arquivo }}
                         </h1>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            {{ getTipoLabel(anexo.tipo) }} • {{ formatFileSize(anexo.tamanho_arquivo) }}
+                            {{ getTipoLabel(anexo.tipo_anexo) }} • {{ formatFileSize(anexo.tamanho_arquivo) }}
                         </p>
                     </div>
                 </div>
@@ -307,8 +307,8 @@ const deleteAnexo = () => {
                                         <dd class="mt-1">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                                :class="getTipoBadgeColor(anexo.tipo)">
-                                                {{ getTipoLabel(anexo.tipo) }}
+                                                :class="getTipoBadgeColor(anexo.tipo_anexo)">
+                                                {{ getTipoLabel(anexo.tipo_anexo) }}
                                             </span>
                                         </dd>
                                     </div>
