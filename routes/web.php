@@ -4,6 +4,8 @@ use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\anexoController;
 use App\Http\Controllers\EnderecoController;
 use App\Http\Controllers\HierarchiaController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -45,5 +47,21 @@ Route::delete('/enderecos/{endereco}', [EnderecoController::class, 'destroy'])->
 // API routes for related data
 Route::get('/api/empresas/{empresa}/anexos', [anexoController::class, 'byEmpresa'])->name('api.empresas.anexos');
 Route::get('/api/enderecos/search', [EnderecoController::class, 'search'])->name('api.enderecos.search');
+
+
+Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+Route::get('/products', [ProductController::class, 'index'])->name('products.list');
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::post('/products/image', [ProductController::class, 'sendImage'])->name('products.sendImage');
+
+//Wallet api route
+
+Route::post('/wallet/notify', [WalletController::class, 'walletNotify'])->name('wallet.notify');
+Route::get('/wallet/status', [WalletController::class, 'walletStatus'])->name('wallet.status');
+Route::post('/wallet/transfer', [WalletController::class, 'walletTransfer'])->name('wallet.transfer');
+Route::get('/wallet/balance', [WalletController::class, 'walletBalance'])->name('wallet.balance');
+Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
+
+
 
 require __DIR__.'/settings.php';

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useToast } from '@/composables/useToast';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type PaginatedResponse } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import Pagination from '@/components/ui/Pagination.vue';
 
 // Props from Laravel controller
 interface Empresa {
@@ -26,7 +27,7 @@ interface Anexo {
 }
 
 interface Props {
-    anexos: Anexo[];
+    anexos: PaginatedResponse<Anexo>;
     filters?: {
         search?: string;
         tipo?: string;
@@ -72,7 +73,7 @@ const hasFilters = computed(() => {
     return search.value || selectedTipo.value || selectedEmpresa.value;
 });
 
-const filteredAnexosCount = computed(() => props.anexos.length);
+const filteredAnexosCount = computed(() => props.anexos.data.length);
 
 // Utility functions
 const formatFileSize = (bytes: number): string => {
@@ -286,8 +287,8 @@ const deleteAnexo = (id: number) => {
             </div>
 
             <!-- Anexos Grid -->
-            <div v-if="anexos.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div v-for="anexo in anexos" :key="anexo.id"
+            <div v-if="anexos.data.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div v-for="anexo in anexos.data" :key="anexo.id"
                     class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                     <!-- File Header -->
                     <div class="p-4 border-b border-gray-200 dark:border-gray-600">
@@ -386,6 +387,9 @@ const deleteAnexo = (id: number) => {
                 Novo Anexo
                 </Link>
             </div>
+
+            <!-- Pagination -->
+            <Pagination :data="anexos" />
         </div>
 
         <!-- Delete Confirmation Modal -->

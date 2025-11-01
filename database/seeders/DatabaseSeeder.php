@@ -19,9 +19,19 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Populate empresas, enderecos, and anexos tables
+        // Populate all tables in correct order (respecting foreign key dependencies)
         $this->call([
             EmpresaSeeder::class,
+            brands::class,           // Must run before products
+            categories::class,       // Must run before products
+            products::class,         // Must run before images and prices
+            images::class,           // Depends on products
+            prices::class,           // Depends on products
+            StockMovementSeeder::class, // Must run before stock
+            StockSeeder::class,      // Depends on products and stock movements
+            WalletSeeder::class,     // Depends on users
+            WalletTransactionSeeder::class, // Depends on wallets
+            wallets::class,          // Depends on users
         ]);
     }
 }

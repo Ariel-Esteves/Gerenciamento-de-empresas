@@ -19,7 +19,6 @@ class anexoController extends Controller
     public function index(Request $request): Response
     {
         $query = Anexo::with('empresa');
-
         // Apply search filter
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
@@ -101,14 +100,14 @@ class anexoController extends Controller
         try {
             $file = $request->file('arquivo');
             $empresa = Empresa::findOrFail($request->empresa_id);
-            
+
             // Generate unique filename
             $filename = time() . '_' . $file->getClientOriginalName();
-            
+
             // Store file in storage/app/public/anexos/{empresa_id}/
             $filePath = $file->storeAs(
-                'anexos/' . $empresa->id, 
-                $filename, 
+                'anexos/' . $empresa->id,
+                $filename,
                 'public'
             );
 
@@ -196,14 +195,14 @@ class anexoController extends Controller
 
                 $file = $request->file('arquivo');
                 $empresa = Empresa::findOrFail($request->empresa_id);
-                
+
                 // Generate unique filename
                 $filename = time() . '_' . $file->getClientOriginalName();
-                
+
                 // Store new file
                 $filePath = $file->storeAs(
-                    'anexos/' . $empresa->id, 
-                    $filename, 
+                    'anexos/' . $empresa->id,
+                    $filename,
                     'public'
                 );
 
@@ -261,7 +260,7 @@ class anexoController extends Controller
         }
 
         return Storage::disk('public')->download(
-            $anexo->caminho_arquivo, 
+            $anexo->caminho_arquivo,
             $anexo->nome_arquivo
         );
     }

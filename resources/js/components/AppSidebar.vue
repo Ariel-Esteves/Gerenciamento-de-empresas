@@ -24,6 +24,11 @@ const mainNavItems: NavItem[] = [
         href: '/anexos',
         icon: FileText,
     },
+    {
+        title: 'Products',
+        href: '/products',
+        icon: BookOpen,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
